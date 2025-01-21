@@ -1,28 +1,66 @@
 # What is PostgreSQL?
 
-PostgreSQL, often simply "Postgres", is an object-relational database management system (ORDBMS) with an emphasis on extensibility and standards-compliance. As a database server, its primary function is to store data, securely and supporting best practices, and retrieve it later, as requested by other software applications, be it those on the same computer or those running on another computer across a network (including the Internet). It can handle workloads ranging from small single-machine applications to large Internet-facing applications with many concurrent users. Recent versions also provide replication of the database itself for security and scalability.
+* PostgreSQL or "Postgres"
+  * 👀== object-relational database management system (ORDBMS) / 👀
+    * emphasis on
+      * extensibility
+      * standards-compliance
+    * characteristics
+      * implements the MAJORITY of the SQL:2011 standard
+      * ACID-compliant
+      * transactional (including most DDL statements)
+        * -> avoid locking issues -- via -- multiversion concurrency control (MVCC)
+      * immunity to dirty reads
+      * full serializability
+      * supports
+        * complex SQL queries -- via -- MANY indexing methods / NOT available | OTHER databases
+        * functions
+        * stored procedures
+        * other expandability 
+      * has
+        * views
+          * updatable
+          * materialized
+        * triggers,
+        * foreign keys
+        * large number of extensions -- written by -- third parties
+  * 's migration tools
+    * allows
+      * working with 
+        * MAJOR proprietary databases
+        * open source databases 
+  * audience (== who will use it)
+    * users,
+    * utilities
+    * third party applications
 
-PostgreSQL implements the majority of the SQL:2011 standard, is ACID-compliant and transactional (including most DDL statements) avoiding locking issues using multiversion concurrency control (MVCC), provides immunity to dirty reads and full serializability; handles complex SQL queries using many indexing methods that are not available in other databases; has updateable views and materialized views, triggers, foreign keys; supports functions and stored procedures, and other expandability, and has a large number of extensions written by third parties. In addition to the possibility of working with the major proprietary and open source databases, PostgreSQL supports migration from them, by its extensive standard SQL support and available migration tools. And if proprietary extensions had been used, by its extensibility that can emulate many through some built-in and third-party open source compatibility extensions, such as for Oracle.
+* database server
+  * primary goal
+    * store data /
+      * securely and supporting best practices,
+      * retrieve it later -- by -- other software applications / hosted | 
+        * SAME computer
+        * ANOTHER computer 
+  * can 
+    * handle workloads / [small single-machine applications, large Internet-facing applications with MANY concurrent users] 
+    * | RECENT versions,
+      * provide replication of the database
 
-> [wikipedia.org/wiki/PostgreSQL](https://en.wikipedia.org/wiki/PostgreSQL)
+# How to start a postgres instance
 
-%%LOGO%%
+## -- via -- `initdb`
 
-# How to use this image
+* == [`initdb`](https://www.postgresql.org/docs/14/app-initdb.html)
+  * used | entrypoint
+  * creates default
+    * `postgres` user
+    * `postgres` database
+* 
+    ```console
+    $ docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d %%IMAGE%%
+    ```
 
-## start a postgres instance
-
-```console
-$ docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d %%IMAGE%%
-```
-
-The default `postgres` user and database are created in the entrypoint with `initdb`.
-
-> The postgres database is a default database meant for use by users, utilities and third party applications.
->
-> [postgresql.org/docs](https://www.postgresql.org/docs/14/app-initdb.html)
-
-## ... or via `psql`
+## -- via -- `psql`
 
 ```console
 $ docker run -it --rm --network some-network %%IMAGE%% psql -h some-postgres -U postgres
@@ -36,22 +74,32 @@ postgres=# SELECT 1;
 (1 row)
 ```
 
-## %%STACK%%
+## -- via -- [`docker-compose`](https://github.com/docker/compose) or [`docker stack deploy`](https://docs.docker.com/engine/reference/commandline/stack_deploy/)
 
-Run `docker stack deploy -c stack.yml %%REPO%%` (or `docker-compose -f stack.yml up`), wait for it to initialize completely, and visit `http://swarm-ip:8080`, `http://localhost:8080`, or `http://host-ip:8080` (as appropriate).
+* _Example:_ see [stack](stack.yml)
+  * run
+    * `docker stack deploy -c stack.yml %%REPO%%` or
+    * `docker-compose -f stack.yml up`
+  * check, visiting
+    * `http://swarm-ip:8080`,
+    * `http://localhost:8080`,
+    * `http://host-ip:8080`
 
-# How to extend this image
-
-There are many ways to extend the `%%REPO%%` image. Without trying to support every possible use case, here are just a few that we have found useful.
+# WAYS to extend this image
 
 ## Environment Variables
 
-The PostgreSQL image uses several environment variables which are easy to miss. The only variable required is `POSTGRES_PASSWORD`, the rest are optional.
+* `POSTGRES_PASSWORD`
+  * ⚠️UNIQUE MANDATORY variable ⚠️
 
-**Warning**: the Docker specific variables will only have an effect if you start the container with a data directory that is empty; any pre-existing database will be left untouched on container startup.
+* ⚠️requirements to be valid Docker specific variables ⚠️
+  * | container startup
+    * -- with a -- data directory / is empty
+    * pre-existing database will be left untouched
 
 ### `POSTGRES_PASSWORD`
 
+* TODO:
 This environment variable is required for you to use the PostgreSQL image. It must not be empty or undefined. This environment variable sets the superuser password for PostgreSQL. The default superuser is defined by the `POSTGRES_USER` environment variable.
 
 **Note 1:** The PostgreSQL image sets up `trust` authentication locally so you may notice a password is not required when connecting from `localhost` (inside the same container). However, a password will be required if connecting from a different host/container.
