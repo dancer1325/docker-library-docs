@@ -144,22 +144,32 @@ See the PostgreSQL documentation on [`pg_hba.conf`](https://www.postgresql.org/d
 
 ### `PGDATA`
 
-> **Important Note:** Mount the data volume at `/var/lib/postgresql/data` and not at `/var/lib/postgresql` because mounts at the latter path WILL NOT PERSIST database data when the container is re-created. The Dockerfile that builds the image declares a volume at `/var/lib/postgresql/data` and if no data volume is mounted at that path then the container runtime will automatically create an [anonymous volume](https://docs.docker.com/engine/storage/#volumes) that is not reused across container re-creations. Data will be written to the anonymous volume rather than your intended data volume and won't persist when the container is deleted and re-created.
+* PostgreSQL Docker file
+  * by default, ⚠️`/var/lib/postgresql/data` == default data directory ⚠️
+    * -> ⚠️mount the data volume | `/var/lib/postgresql/data` ⚠️
+      * ❌NOT | `/var/lib/postgresql`❌
+        * Reason: 🧠| re-create the container & use `/var/lib/postgresql` -> NOT PERSIST database data 🧠
+      * if you do NOT mount data volume | `/var/lib/postgresql/data` -> container runtime -- will AUTOMATICALLY create an -- [anonymous volume](https://docs.docker.com/engine/storage/#volumes) /
+        * ⚠️NOT reused ACROSS container re-creations ⚠️
 
-This optional variable can be used to define another location - like a subdirectory - for the database files. The default is `/var/lib/postgresql/data`. If the data volume you're using is a filesystem mountpoint (like with GCE persistent disks), or remote folder that cannot be chowned to the `postgres` user (like some NFS mounts), or contains folders/files (e.g. `lost+found`), Postgres `initdb` requires a subdirectory to be created within the mountpoint to contain the data.
-
-For example:
-
-```console
-$ docker run -d \
-	--name some-postgres \
-	-e POSTGRES_PASSWORD=mysecretpassword \
-	-e PGDATA=/var/lib/postgresql/data/pgdata \
-	-v /custom/mount:/var/lib/postgresql/data \
-	%%IMAGE%%
-```
-
-This is an environment variable that is not Docker specific. Because the variable is used by the `postgres` server binary (see the [PostgreSQL docs](https://www.postgresql.org/docs/14/app-postgres.html#id-1.9.5.14.7)), the entrypoint script takes it into account.
+* == environment variable /
+  * OPTIONAL
+  * NOT Docker-specific
+* allows
+  * 👀defining ANOTHER database files' location 👀
+* TODO: If the data volume you're using is a filesystem mountpoint (like with GCE persistent disks), or remote folder that cannot be chowned to the `postgres` user (like some NFS mounts), or contains folders/files (e.g. `lost+found`), Postgres `initdb` requires a subdirectory to be created within the mountpoint to contain the data.
+* uses
+  * `postgres` [server binary](https://www.postgresql.org/docs/14/app-postgres.html#id-1.9.5.14.7)
+    * -> entrypoint script takes it into account
+* _Example:_
+    ```console
+    $ docker run -d \
+        --name some-postgres \
+        -e POSTGRES_PASSWORD=mysecretpassword \
+        -e PGDATA=/var/lib/postgresql/data/pgdata \
+        -v /custom/mount:/var/lib/postgresql/data \
+        %%IMAGE%%
+    ```
 
 ## Docker Secrets
 
