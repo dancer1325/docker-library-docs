@@ -84,6 +84,8 @@ postgres=# SELECT 1;
     * `http://swarm-ip:8080`,
     * `http://localhost:8080`,
     * `http://host-ip:8080`
+  * `docker exec -it <container_name_or_id> psql -U <username>`
+    * go into the container -- to -- `psql` 
 
 # WAYS to extend this image
 
