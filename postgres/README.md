@@ -108,12 +108,10 @@ PostgreSQL implements the majority of the SQL:2011 standard, is ACID-compliant a
 ```console
 $ docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
 ```
-
-The default `postgres` user and database are created in the entrypoint with `initdb`.
-
-> The postgres database is a default database meant for use by users, utilities and third party applications.
->
-> [postgresql.org/docs](https://www.postgresql.org/docs/14/app-initdb.html)
+* create -- , via `initdb`, -- 
+  * default `postgres` user
+  * default `postgres` database 
+  * see [initdb](https://www.postgresql.org/docs/14/app-initdb.html)
 
 ## ... or via `psql`
 
@@ -131,42 +129,43 @@ postgres=# SELECT 1;
 
 ## ... via [`docker-compose`](https://github.com/docker/compose) or [`docker stack deploy`](https://docs.docker.com/engine/reference/commandline/stack_deploy/)
 
-Example `docker-compose.yml` for `postgres`:
-
-```yaml
-# Use postgres/example user/password credentials
-version: '3.9'
-
-services:
-
-  db:
-    image: postgres
-    restart: always
-    # set shared memory limit when using docker-compose
-    shm_size: 128mb
-    # or set shared memory limit when deploy via swarm stack
-    #volumes:
-    #  - type: tmpfs
-    #    target: /dev/shm
-    #    tmpfs:
-    #      size: 134217728 # 128*2^20 bytes = 128Mb
-    environment:
-      POSTGRES_PASSWORD: example
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-```
-
-[![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/docker-library/docs/f254f585ba82d2e19d794100dd7bca71fb1c02e7/postgres/stack.yml)
-
-Run `docker stack deploy -c stack.yml postgres` (or `docker-compose -f stack.yml up`), wait for it to initialize completely, and visit `http://swarm-ip:8080`, `http://localhost:8080`, or `http://host-ip:8080` (as appropriate).
+* _Example:_ `docker-compose.yml`
+    ```yaml
+    # Use postgres/example user/password credentials
+    version: '3.9'
+    
+    services:
+    
+      db:
+        image: postgres
+        restart: always
+        # set shared memory limit when using docker-compose
+        shm_size: 128mb
+        # or set shared memory limit when deploy via swarm stack
+        #volumes:
+        #  - type: tmpfs
+        #    target: /dev/shm
+        #    tmpfs:
+        #      size: 134217728 # 128*2^20 bytes = 128Mb
+        environment:
+          POSTGRES_PASSWORD: example
+    
+      adminer:
+        image: adminer
+        restart: always
+        ports:
+          - 8080:8080
+    ```
+* [![Try \| PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/docker-library/docs/f254f585ba82d2e19d794100dd7bca71fb1c02e7/postgres/stack.yml)
+  * `docker stack deploy -c stack.yml postgres` OR `docker-compose -f stack.yml up`
+  * | your browser,
+    * `http://swarm-ip:8080`,
+    * `http://localhost:8080`,
+    * `http://host-ip:8080`
 
 # How to extend this image
 
-There are many ways to extend the `postgres` image. Without trying to support every possible use case, here are just a few that we have found useful.
+* TODO: There are many ways to extend the `postgres` image. Without trying to support every possible use case, here are just a few that we have found useful.
 
 ## Environment Variables
 
